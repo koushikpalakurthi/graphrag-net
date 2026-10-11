@@ -1,0 +1,10 @@
+[
+  {
+    "source_id": "llm-extracted--863813e3-4532-4220-91d3-82c00041e491",
+    "target_id": "llm-extracted--28da51ff-a036-4423-975f-c23c1999bcaa",
+    "label": "RELATED_TO",
+    "description": "Inferred from cross-document GNN embedding similarity (0.879)",
+    "source": "inferred",
+    "confidence": 0.6
+  }
+]

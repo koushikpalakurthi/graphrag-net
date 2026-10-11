@@ -1,0 +1,118 @@
+[
+  {
+    "source_id": "GHSA-xm43-3m56-w3wf",
+    "source_cve": "CVE-2026-59817",
+    "entities": [
+      {
+        "name": "Ghost",
+        "type": "Software",
+        "known_id_hint": null
+      }
+    ],
+    "relations": []
+  },
+  {
+    "source_id": "GHSA-chgm-3698-jm42",
+    "source_cve": "CVE-2026-53947",
+    "entities": [
+      {
+        "name": "Ghost",
+        "type": "Software",
+        "known_id_hint": null
+      },
+      {
+        "name": "T1611",
+        "type": "Technique",
+        "known_id_hint": "T1611"
+      },
+      {
+        "name": "Information Disclosure",
+        "type": "AttackPattern",
+        "known_id_hint": null
+      },
+      {
+        "name": "Update to Ghost v6.21.1",
+        "type": "Mitigation",
+        "known_id_hint": null
+      }
+    ],
+    "relations": [
+      {
+        "source": "Update to Ghost v6.21.1",
+        "relation": "MITIGATES",
+        "target": "Information Disclosure"
+      }
+    ]
+  },
+  {
+    "source_id": "GHSA-xpp7-93x6-v29m",
+    "source_cve": "CVE-2026-53950",
+    "entities": [
+      {
+        "name": "Ghost",
+        "type": "Software",
+        "known_id_hint": null
+      },
+      {
+        "name": "XSS",
+        "type": "AttackPattern",
+        "known_id_hint": null
+      },
+      {
+        "name": "ActivityPub client",
+        "type": "Software",
+        "known_id_hint": null
+      },
+      {
+        "name": "@tryghost/activitypub v3.0.8",
+        "type": "Software",
+        "known_id_hint": null
+      },
+      {
+        "name": "@tryghost/activitypub v3.1.0",
+        "type": "Software",
+        "known_id_hint": null
+      }
+    ],
+    "relations": [
+      {
+        "source": "ActivityPub client",
+        "relation": "TARGETS",
+        "target": "Ghost"
+      }
+    ]
+  },
+  {
+    "source_id": "GHSA-7mpp-r37j-x5wh",
+    "source_cve": "CVE-2026-70594",
+    "entities": [
+      {
+        "name": "Ghost Admin",
+        "type": "Software",
+        "known_id_hint": null
+      },
+      {
+        "name": "Session Fixation",
+        "type": "AttackPattern",
+        "known_id_hint": null
+      },
+      {
+        "name": "CVE not mentioned, but the weakness is similar to CWE-384",
+        "type": "Weakness",
+        "known_id_hint": "CWE-384"
+      }
+    ],
+    "relations": [
+      {
+        "source": "Session Fixation",
+        "relation": "TARGETS",
+        "target": "Ghost Admin"
+      },
+      {
+        "source": "Ghost Admin",
+        "relation": "EXPLOITS",
+        "target": "CVE not mentioned, but the weakness is similar to CWE-384"
+      }
+    ]
+  }
+]

@@ -1,0 +1,29 @@
+# --- Graph DB driver ---
+neo4j>=5.20.0
+
+# --- STIX / MITRE ATT&CK parsing ---
+stix2>=3.0.1
+requests>=2.31.0
+
+# --- Text processing / entity resolution ---
+rapidfuzz>=3.6.0          # fast fuzzy string matching for alias merging
+sentence-transformers>=2.6.0  # embeddings for entity resolution + retrieval
+
+# --- GNN (Stage 2, wired up next) ---
+torch>=2.2.0
+torch-geometric>=2.5.0
+scikit-learn>=1.4.0        # TF-IDF node features (stand-in for sentence-transformer
+                            # embeddings -- see build_pyg_graph.py docstring for why)
+
+# --- Retrieval (Stage 3, wired up later) ---
+faiss-cpu>=1.8.0
+rank-bm25>=0.2.2
+
+# --- LLM orchestration & CTI extraction ---
+openai>=1.50.0              # client library for Groq's OpenAI-compatible API (free tier)
+ctinexus                    # CTINexus CTI extraction & knowledge graph alignment package
+
+# --- Utilities ---
+python-dotenv>=1.0.1
+tqdm>=4.66.0
+pydantic>=2.6.0

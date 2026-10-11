@@ -1,0 +1,34 @@
+[
+  {
+    "source_id": "llm-extracted--4bb877d4-b281-4a6d-b932-c84f2e7a341c",
+    "target_id": "llm-extracted--b5eeb214-6f96-4bd6-b65b-bd1d688ecf5e",
+    "label": "MITIGATES",
+    "description": "Extracted from advisory GHSA-chgm-3698-jm42",
+    "source": "llm_extracted",
+    "confidence": 0.7
+  },
+  {
+    "source_id": "llm-extracted--f948956e-7015-4e49-bb59-5d7bbea93f05",
+    "target_id": "llm-extracted--863813e3-4532-4220-91d3-82c00041e491",
+    "label": "TARGETS",
+    "description": "Extracted from advisory GHSA-xpp7-93x6-v29m",
+    "source": "llm_extracted",
+    "confidence": 0.7
+  },
+  {
+    "source_id": "attack-pattern--c1e3e934-5b43-4af9-b92b-9a4837a90c14",
+    "target_id": "llm-extracted--28da51ff-a036-4423-975f-c23c1999bcaa",
+    "label": "TARGETS",
+    "description": "Extracted from advisory GHSA-7mpp-r37j-x5wh",
+    "source": "llm_extracted",
+    "confidence": 0.7
+  },
+  {
+    "source_id": "llm-extracted--28da51ff-a036-4423-975f-c23c1999bcaa",
+    "target_id": "CWE-384",
+    "label": "EXPLOITS",
+    "description": "Extracted from advisory GHSA-7mpp-r37j-x5wh",
+    "source": "llm_extracted",
+    "confidence": 0.7
+  }
+]

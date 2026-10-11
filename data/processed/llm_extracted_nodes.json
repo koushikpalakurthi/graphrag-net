@@ -1,0 +1,82 @@
+[
+  {
+    "id": "llm-extracted--863813e3-4532-4220-91d3-82c00041e491",
+    "label": "Software",
+    "attack_id": null,
+    "name": "Ghost",
+    "description": "",
+    "aliases": [],
+    "platforms": [],
+    "source": "llm_extracted"
+  },
+  {
+    "id": "llm-extracted--b5eeb214-6f96-4bd6-b65b-bd1d688ecf5e",
+    "label": "AttackPattern",
+    "attack_id": null,
+    "name": "Information Disclosure",
+    "description": "",
+    "aliases": [],
+    "platforms": [],
+    "source": "llm_extracted"
+  },
+  {
+    "id": "llm-extracted--4bb877d4-b281-4a6d-b932-c84f2e7a341c",
+    "label": "Mitigation",
+    "attack_id": null,
+    "name": "Update to Ghost v6.21.1",
+    "description": "",
+    "aliases": [],
+    "platforms": [],
+    "source": "llm_extracted"
+  },
+  {
+    "id": "llm-extracted--761d7976-2605-42d2-8695-9ecf1c9e0bda",
+    "label": "AttackPattern",
+    "attack_id": null,
+    "name": "XSS",
+    "description": "",
+    "aliases": [],
+    "platforms": [],
+    "source": "llm_extracted"
+  },
+  {
+    "id": "llm-extracted--f948956e-7015-4e49-bb59-5d7bbea93f05",
+    "label": "Software",
+    "attack_id": null,
+    "name": "ActivityPub client",
+    "description": "",
+    "aliases": [],
+    "platforms": [],
+    "source": "llm_extracted"
+  },
+  {
+    "id": "llm-extracted--8969ad49-7d92-4637-b0ee-2e4a11ad89d0",
+    "label": "Software",
+    "attack_id": null,
+    "name": "@tryghost/activitypub v3.0.8",
+    "description": "",
+    "aliases": [],
+    "platforms": [],
+    "source": "llm_extracted"
+  },
+  {
+    "id": "llm-extracted--07e62ca4-82e5-43bc-9be9-8e5aa5b78dd9",
+    "label": "Software",
+    "attack_id": null,
+    "name": "@tryghost/activitypub v3.1.0",
+    "description": "",
+    "aliases": [],
+    "platforms": [],
+    "source": "llm_extracted"
+  },
+  {
+    "id": "llm-extracted--28da51ff-a036-4423-975f-c23c1999bcaa",
+    "label": "Software",
+    "attack_id": null,
+    "name": "Ghost Admin",
+    "description": "",
+    "aliases": [],
+    "platforms": [],
+    "source": "llm_extracted"
+  }
+]
