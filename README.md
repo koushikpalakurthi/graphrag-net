@@ -8,31 +8,7 @@ GraphRAG-Net combines structured Cyber Threat Intelligence Knowledge Graphs (MIT
 
 ## 📌 Architecture Overview
 
-```mermaid
-graph TD
-    Query[Analyst Query] --> Stg3[Stage 3: Hybrid Dual-Channel Retrieval]
-    
-    subgraph Knowledge Base
-        Raw[MITRE ATT&CK / CAPEC / CWE / CVE] --> KG[Heterogeneous Knowledge Graph]
-        KG --> GNN[PyG Graph Neural Network Embeddings]
-    end
-
-    KG --> Stg3
-    GNN --> Stg3
-    
-    Stg3 --> Stg4[Stage 4: Evidence Ranking & Sub-graph Triplet Extraction]
-    Stg4 --> Stg5[Stage 5: LLM Reasoning Engine (Groq / OpenAI)]
-    
-    Stg3 --> Feat[Confidence Feature Extractor]
-    Stg4 --> Feat
-    Stg5 --> Feat
-    
-    Feat --> Calibrator[Platt-Calibrated GradientBoosting Model]
-    Calibrator --> Output[Calibrated Confidence Score P(correct) & Sub-Scores]
-    
-    Stg5 --> UI[Interactive React / Vis-Network Web Dashboard]
-    Output --> UI
-```
+![GraphRAG-Net End-to-End Pipeline](figures/pipeline_architecture.png)
 
 ---
 
