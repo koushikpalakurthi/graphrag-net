@@ -1,3 +1,14 @@
+---
+title: GraphRAG-Net CTI Reasoning
+emoji: 🛡️
+colorFrom: red
+colorTo: indigo
+sdk: docker
+app_port: 7860
+pinned: false
+license: mit
+---
+
 # GraphRAG-Net
 
 > **Hybrid Graph-Augmented Cyber Threat Intelligence (CTI) Reasoning System with Calibrated Confidence Scoring**

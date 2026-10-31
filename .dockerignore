@@ -1,0 +1,14 @@
+.venv
+venv
+env
+node_modules
+frontend/node_modules
+.git
+.gitignore
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.coverage
+htmlcov
+

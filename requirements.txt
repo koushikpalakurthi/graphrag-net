@@ -23,6 +23,10 @@ rank-bm25>=0.2.2
 openai>=1.50.0              # client library for Groq's OpenAI-compatible API (free tier)
 ctinexus                    # CTINexus CTI extraction & knowledge graph alignment package
 
+# --- Web Server & API ---
+fastapi>=0.110.0
+uvicorn>=0.28.0
+
 # --- Utilities ---
 python-dotenv>=1.0.1
 tqdm>=4.66.0

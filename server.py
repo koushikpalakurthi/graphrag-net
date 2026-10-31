@@ -8,6 +8,7 @@ Provides REST API endpoints for:
 4. End-to-end GraphRAG CTI Reasoning (Groq LLM / self-test mode).
 """
 import sys
+import os
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 
@@ -184,5 +185,6 @@ if dist_path.exists():
 
 if __name__ == "__main__":
     import uvicorn
-    print("Starting GraphRAG-Net FastAPI backend on http://localhost:8000 ...")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", 8000))
+    print(f"Starting GraphRAG-Net FastAPI backend on http://0.0.0.0:{port} ...")
+    uvicorn.run(app, host="0.0.0.0", port=port)
