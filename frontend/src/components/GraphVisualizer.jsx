@@ -3,9 +3,10 @@ import { Network } from 'vis-network';
 import { DataSet } from 'vis-data';
 import { Network as NetworkIcon } from 'lucide-react';
 
-export default function GraphVisualizer({ graphData, onSelectNode }) {
+export default function GraphVisualizer({ graphData, onSelectNode, theme = 'dark' }) {
   const containerRef = useRef(null);
   const networkRef = useRef(null);
+  const isLight = theme === 'light';
 
   useEffect(() => {
     if (!containerRef.current || !graphData || !graphData.nodes.length) return;
@@ -20,15 +21,21 @@ export default function GraphVisualizer({ graphData, onSelectNode }) {
         size: n.provenance === 'HYBRID_BOTH' ? 22 : (n.composite_score > 0 ? 16 : 10),
         color: {
           background: n.color,
-          border: n.provenance === 'HYBRID_BOTH' ? '#38BDF8' : '#1E293B',
-          highlight: { background: '#38BDF8', border: '#FFFFFF' }
+          border: n.provenance === 'HYBRID_BOTH' ? (isLight ? '#0284C7' : '#38BDF8') : (isLight ? '#CBD5E1' : '#1E293B'),
+          highlight: { background: isLight ? '#0284C7' : '#38BDF8', border: isLight ? '#0F172A' : '#FFFFFF' }
         },
         borderWidth: n.provenance === 'HYBRID_BOTH' ? 3 : 1,
-        font: { color: '#F8FAFC', face: 'Inter', size: 12 }
+        font: {
+          color: isLight ? '#0F172A' : '#F8FAFC',
+          face: 'Inter, system-ui, sans-serif',
+          size: 12,
+          strokeWidth: 0
+        }
       }))
     );
 
     // Convert edges to Vis format
+    // Clean edge labels: Pure white text, NO GLOW (strokeWidth: 0, strokeColor: 'transparent')
     const visEdges = new DataSet(
       graphData.edges.map((e, idx) => ({
         id: idx,
@@ -36,9 +43,22 @@ export default function GraphVisualizer({ graphData, onSelectNode }) {
         to: e.to,
         label: e.label,
         arrows: 'to',
-        color: { color: e.is_core ? 'rgba(56, 189, 248, 0.6)' : 'rgba(148, 163, 184, 0.25)', highlight: '#38BDF8' },
+        color: {
+          color: e.is_core
+            ? (isLight ? 'rgba(2, 132, 199, 0.85)' : 'rgba(56, 189, 248, 0.7)')
+            : (isLight ? 'rgba(100, 116, 139, 0.55)' : 'rgba(148, 163, 184, 0.3)'),
+          highlight: isLight ? '#0284C7' : '#38BDF8'
+        },
         width: e.is_core ? 2 : 1,
-        font: { color: '#94A3B8', size: 10, align: 'top' }
+        font: {
+          color: isLight ? '#0F172A' : '#FFFFFF',
+          size: 10,
+          align: 'top',
+          face: 'Inter, system-ui, sans-serif',
+          strokeWidth: 0,
+          strokeColor: 'transparent',
+          background: isLight ? 'rgba(241, 245, 249, 0.88)' : 'rgba(15, 23, 42, 0.8)'
+        }
       }))
     );
 
@@ -79,7 +99,7 @@ export default function GraphVisualizer({ graphData, onSelectNode }) {
         networkRef.current.destroy();
       }
     };
-  }, [graphData, onSelectNode]);
+  }, [graphData, onSelectNode, isLight]);
 
   return (
     <div className="glass-card" style={{ display: 'flex', flexDirection: 'column' }}>

@@ -8,6 +8,9 @@ import StatsFooter from './components/StatsFooter';
 import './App.css';
 
 export default function App() {
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('graphrag_theme') || 'dark';
+  });
   const [stats, setStats] = useState(null);
   const [samples, setSamples] = useState([]);
   const [query, setQuery] = useState('APT29 credential access and phishing techniques');
@@ -15,6 +18,16 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
+
+  // Sync theme with html root attribute and localStorage
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('graphrag_theme', theme);
+  }, [theme]);
+
+  const handleToggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   // Fetch initial stats & sample queries
   useEffect(() => {
@@ -58,7 +71,7 @@ export default function App() {
 
   return (
     <div className="app-container">
-      <Header stats={stats} />
+      <Header stats={stats} theme={theme} onToggleTheme={handleToggleTheme} />
 
       <SearchBar
         query={query}
@@ -74,6 +87,7 @@ export default function App() {
         <GraphVisualizer
           graphData={result?.graph_data || { nodes: [], edges: [] }}
           onSelectNode={(node) => setSelectedNode(node)}
+          theme={theme}
         />
 
         <EvidencePanel

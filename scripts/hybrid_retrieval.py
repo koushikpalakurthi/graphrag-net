@@ -195,7 +195,7 @@ class HybridRetriever:
                 "attack_id": node_info.get("attack_id"),
                 "provenance": prov_label,
                 "rrf_score": round(rrf_score, 5),
-                "description": node_info.get("description", "")[:200],
+                "description": node_info.get("description", ""),
                 "subgraph_context": neighbor_summary,
             })
 

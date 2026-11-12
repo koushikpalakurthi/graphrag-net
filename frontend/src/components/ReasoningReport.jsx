@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Cpu, FileText, CheckCircle, ShieldAlert, BarChart3, Info } from 'lucide-react';
 
 export default function ReasoningReport({ result, loading }) {
@@ -56,16 +57,7 @@ export default function ReasoningReport({ result, loading }) {
 
       {/* Stage 6 Confidence Scoring Banner */}
       {s6 && (
-        <div style={{
-          margin: '0 1.5rem',
-          padding: '1.25rem',
-          background: 'rgba(15, 23, 42, 0.75)',
-          border: '1px solid var(--border-color)',
-          borderRadius: '10px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem'
-        }}>
+        <div className="stage6-banner">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div style={{
@@ -129,7 +121,7 @@ export default function ReasoningReport({ result, loading }) {
 
       {/* Main Report Body */}
       <div className="report-content">
-        <ReactMarkdown>{result.reasoning_output}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.reasoning_output}</ReactMarkdown>
       </div>
     </div>
   );

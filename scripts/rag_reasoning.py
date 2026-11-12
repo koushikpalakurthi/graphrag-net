@@ -11,6 +11,7 @@ and prompts an LLM (Groq / OpenAI client) to perform:
 import sys
 import os
 import json
+import re
 import argparse
 from pathlib import Path
 from typing import Dict, Any, List
@@ -41,29 +42,183 @@ SYSTEM_PROMPT = """You are GraphRAG-Net LLM Reasoner, an expert Cyber Threat Int
 Your task is to analyze the provided Knowledge Graph Evidence Bundle (retrieved via hybrid text and GNN structural search) and answer the analyst's query with rigorous technical grounding.
 
 CRITICAL FORMATTING INSTRUCTIONS:
-- Do NOT output messy, collapsed table rows on single lines.
-- Use clean Markdown with clear headings (`###`), bullet points (`- **Point Title**:`), bold identifiers (`[T1566]`, `[CVE-2023-34362]`), and blank lines between paragraphs.
+- STRICTLY PROHIBITED: DO NOT USE ASCII/MARKDOWN PIPE TABLES (`| col | col |`). NO PIPES `|`. NEVER OUTPUT SINGLE-LINE COLLAPSED TABLES.
+- Use clean, structured hierarchical Markdown with bold titles, clean sub-bullets, and blank lines between sections.
+- For identifiers, use bold brackets like **[T1566.001]**, **[CVE-2023-34362]**, **[M1032]**.
 
 You MUST structure your response into the following three sections:
 
 ### 1. Attack Chain Reconstruction
-- Reconstruct the likely step-by-step attack progression (Entry Vector -> Initial Access -> Persistence / Credential Access -> Lateral Movement -> Impact).
-- Format each phase as a clear bullet point:
-  - **Phase 1: Initial Access [T1566]** — Explanation of how entry occurs based on evidence entities.
-  - **Phase 2: Credential Access [T1003]** — Explanation of OS credential dumping / LSASS memory access.
-  - **Phase 3: Persistence & Lateral Movement** — Progression through host and network environment.
+Reconstruct the likely attack progression step-by-step from Entry Vector to Impact. Format every phase as:
+- **Phase 1: Initial Access — [Technique Name]**
+  - **MITRE Techniques**: [T1566.001] Spearphishing Attachment, etc.
+  - **Attack Mechanism**: Clear explanation of how entry occurs based on evidence.
+  - **Graph Evidence**: Specific nodes and relationships confirming this phase.
+
+- **Phase 2: Execution & Defense Evasion — [Technique Name]**
+  - **MITRE Techniques**: [T1027], [T1116], etc.
+  - **Attack Mechanism**: Explanation of evasion/execution behavior.
+  - **Graph Evidence**: Specific relationships and software nodes in graph.
+
+- **Phase 3: Persistence / Credential Access — [Technique Name]**
+  - **MITRE Techniques**: [T1003], [T1197], etc.
+  - **Attack Mechanism**: Explanation of credential harvesting or persistence.
+  - **Graph Evidence**: Specific relationships and tools in graph.
+
+- **Phase 4: Lateral Movement — [Technique Name]**
+  - **MITRE Techniques**: [T1021], [T1570], etc.
+  - **Attack Mechanism**: Explanation of network propagation.
+  - **Graph Evidence**: Relevant nodes and proxy paths.
+
+- **Phase 5: Impact & Exfiltration — [Technique Name]**
+  - **MITRE Techniques**: [T1041], [T1113], etc.
+  - **Attack Mechanism**: Objectives achieved and data transfer.
+  - **Graph Evidence**: Relevant C2 or exfiltration relationships.
 
 ### 2. Actionable & Grounded Mitigations
-- Provide prioritized, actionable mitigations mapped directly to specific entities in the evidence graph.
-- Format each recommendation clearly on its own line:
-  - **[Target Entity / Technique]** -> Proposed Mitigation (e.g. `M1043 Credential Access Protection`, `M1032 Multi-Factor Authentication`).
+Provide prioritized mitigations mapped directly to entities in the evidence graph. Format each recommendation as:
+- **Target: [Entity / Technique ID & Name]**
+  - **Mitigation Control**: Specific defensive mechanism (e.g. `M1043 Credential Access Protection`).
+  - **Implementation Action**: Concrete configuration, detection rule, or policy action.
 
 ### 3. Graph Provenance & Confidence Assessment
-- Summarize channel consensus (items confirmed by both Text Factual search and GNN Structural similarity vs text-only/GNN-only).
-- Give an overall confidence rating (High / Medium / Low) based on evidence density and cross-channel agreement.
+- **Channel Consensus**: Summarize items confirmed by both Text Factual search and GNN Structural similarity vs single-channel.
+- **Graph Triplet Density**: Number of verified relation paths connecting the attack chain.
+- **Overall Confidence**: High / Medium / Low with explicit justification.
 
 DO NOT invent ungrounded CVEs or Technique IDs not supported by or inferable from the evidence.
 """
+
+
+def normalize_cti_report(text: str) -> str:
+    """
+    Cleans and structures CTI reports.
+    Fixes collapsed markdown tables (e.g., `| col | | col |`), decomposes table rows
+    into rich hierarchical markdown cards, replaces HTML tags, and cleans formatting.
+    """
+    if not text:
+        return ""
+
+    # Step 1: Normalize newlines and unicode bullets
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    text = re.sub(r'[\u2022\u00b7\u2023\u25e6\u2043\u2219]', ' - ', text)
+
+    # Step 2: Ensure section headers have clean markdown `#` and surrounding blank lines
+    text = re.sub(r'\*\*\s*(#{1,4})\s*([^\n*]+?)\s*\*\*', r'\1 \2', text)
+    text = re.sub(r'(?i)(?:^|\n)\s*(?:#{1,4}\s*|\*\*\s*)?(\d\.\s*Attack Chain Reconstruction)\s*\**', r'\n\n### 1. Attack Chain Reconstruction\n', text)
+    text = re.sub(r'(?i)(?:^|\n)\s*(?:#{1,4}\s*|\*\*\s*)?(\d\.\s*Actionable (?:&|and) Grounded Mitigations)\s*\**', r'\n\n### 2. Actionable & Grounded Mitigations\n', text)
+    text = re.sub(r'(?i)(?:^|\n)\s*(?:#{1,4}\s*|\*\*\s*)?(\d\.\s*Graph Provenance (?:&|and) Confidence Assessment)\s*\**', r'\n\n### 3. Graph Provenance & Confidence Assessment\n', text)
+
+    # Step 3: Fix collapsed tables where rows were glued on a single line with `| |` or `||`
+    text = re.sub(r'\|\s*\|', '|\n|', text)
+
+    lines = text.split("\n")
+    processed_lines = []
+    
+    in_table = False
+    is_attack_chain_table = False
+    is_mitigation_table = False
+    
+    for line in lines:
+        stripped = line.strip()
+        
+        # Check if line is a table divider like |---|---|
+        if re.match(r'^\|(?:\s*:?-+:?\s*\|)+$', stripped):
+            in_table = True
+            continue
+            
+        # Check if line is a table row
+        if stripped.startswith("|") and stripped.endswith("|") and stripped.count("|") >= 2:
+            cells = [c.strip() for c in stripped.split("|")[1:-1]]
+            
+            # Check for Header row
+            col0_lower = cells[0].lower()
+            if col0_lower in ["phase", "step", "stage"] or (("phase" in col0_lower or "step" in col0_lower) and not re.search(r'\d', col0_lower)):
+                in_table = True
+                is_attack_chain_table = True
+                is_mitigation_table = False
+                continue
+                
+            if any(k in col0_lower for k in ["target entity", "target / technique", "entity / technique", "target entity / technique"]):
+                in_table = True
+                is_mitigation_table = True
+                is_attack_chain_table = False
+                continue
+
+            # Process Attack Chain rows
+            if is_attack_chain_table or re.search(r'phase\s*\d', col0_lower):
+                phase_title = cells[0]
+                mitre_desc = cells[1] if len(cells) > 1 else ""
+                reasoning = cells[2] if len(cells) > 2 else ""
+
+                # Clean <br> tags and bullet points
+                def clean_cell_bullets(val: str) -> list:
+                    chunks = re.split(r'<br\s*/?>|\n', val)
+                    cleaned = []
+                    for c in chunks:
+                        sub = c.strip()
+                        sub = re.sub(r'^[-*•\s]+', '', sub).strip()
+                        if sub:
+                            cleaned.append(sub)
+                    return cleaned
+
+                mitre_items = clean_cell_bullets(mitre_desc)
+                reasoning_items = clean_cell_bullets(reasoning)
+
+                card_lines = [f"- **{phase_title}**"]
+                if mitre_items:
+                    card_lines.append("  - **Techniques & Mechanisms**:")
+                    for itm in mitre_items:
+                        card_lines.append(f"    - {itm}")
+                if reasoning_items:
+                    card_lines.append("  - **Evidence & Graph Reasoning**:")
+                    for itm in reasoning_items:
+                        card_lines.append(f"    - {itm}")
+                
+                processed_lines.append("\n".join(card_lines) + "\n")
+                continue
+
+            # Process Mitigation rows
+            if is_mitigation_table or cells[0].startswith("[") or "m10" in stripped.lower():
+                target = cells[0]
+                mitigation = cells[1] if len(cells) > 1 else ""
+                
+                def clean_mit_bullets(val: str) -> list:
+                    chunks = re.split(r'<br\s*/?>|\n', val)
+                    cleaned = []
+                    for c in chunks:
+                        sub = c.strip()
+                        sub = re.sub(r'^[-*•\s]+', '', sub).strip()
+                        if sub:
+                            cleaned.append(sub)
+                    return cleaned
+
+                mit_items = clean_mit_bullets(mitigation)
+                card_lines = [f"- **Target**: `{target}`"]
+                if mit_items:
+                    card_lines.append("  - **Mitigation Actions**:")
+                    for m in mit_items:
+                        card_lines.append(f"    - {m}")
+                else:
+                    card_lines.append("  - **Mitigation Actions**: Enforce standard defense controls as mapped in graph.")
+                
+                processed_lines.append("\n".join(card_lines) + "\n")
+                continue
+
+        # If not a recognized table row, reset table state
+        if not (stripped.startswith("|") and stripped.endswith("|")):
+            in_table = False
+            is_attack_chain_table = False
+            is_mitigation_table = False
+            
+        clean_line = line.replace("<br>", "\n").replace("<br/>", "\n").replace("<br />", "\n")
+        processed_lines.append(clean_line)
+
+    result = "\n".join(processed_lines)
+    # Clean up empty bullet points like "- \n"
+    result = re.sub(r'^\s*[-*]\s*$', '', result, flags=re.MULTILINE)
+    result = re.sub(r'\n{3,}', '\n\n', result)
+    return result.strip()
 
 
 def format_evidence_prompt(bundle: Dict[str, Any]) -> str:
@@ -93,7 +248,8 @@ EVIDENCE SUMMARY: {bundle['summary']}
 
 === END OF EVIDENCE ===
 
-Please generate the detailed CTI analysis, attack chain reconstruction, grounded mitigations, and confidence assessment based on the evidence above.
+Please generate the structured CTI report strictly following the 3 sections (Attack Chain, Mitigations, Confidence Assessment).
+Use clean Markdown bullet points, phase cards, and bold headers. DO NOT output pipe tables or single-line tables under any circumstance.
 """
     return prompt
 
@@ -104,13 +260,17 @@ def generate_structured_graph_fallback(bundle: Dict[str, Any]) -> str:
     triplets = bundle.get("triplets", [])
     
     tactics = [e for e in entities if e.get("label") in ("Tactic", "Technique")]
+    vulns = [e for e in entities if e.get("label") in ("Vulnerability", "Weakness", "AttackPattern")]
+    primary_items = tactics if tactics else (vulns if vulns else entities)
     mitigations = [e for e in entities if e.get("label") == "Mitigation"]
     both_count = sum(1 for e in entities if e.get("provenance") == "HYBRID_BOTH")
 
+    entry_summary = ", ".join([f"{e['name']} [{e.get('attack_id','')}]" if e.get('attack_id') else e['name'] for e in primary_items[:3]]) or "retrieved threat entities"
+
     report_lines = [
         "### 1. Attack Chain Reconstruction",
-        "- **Phase 1: Initial Access & Entry Vectors** — Core techniques identified: " + ", ".join([f"{e['name']} [{e.get('attack_id','')}]" for e in tactics[:3]]) + ".",
-        "- **Phase 2: Execution & Persistence** — Subgraph relation paths reveal connectivity between credential access and system imaging.",
+        f"- **Phase 1: Initial Access & Entry Vectors** — Core entities identified: {entry_summary}.",
+        "- **Phase 2: Execution & Persistence** — Subgraph relation paths reveal connectivity across weaknesses, attack patterns, and system execution vectors.",
         "- **Phase 3: Lateral Movement & Impact** — Primary entities indicate multi-vector threat progression across enterprise hosts.",
         "",
         "### 2. Actionable & Grounded Mitigations",
@@ -119,10 +279,14 @@ def generate_structured_graph_fallback(bundle: Dict[str, Any]) -> str:
     mit_triplets = [t for t in triplets if "MITIGATES" in t.get("relation", "")]
     if mit_triplets:
         for t in mit_triplets[:5]:
-            report_lines.append(f"- **[{t['object']}]** -> Implement `{t['subject']}` to prevent technique execution.")
-    else:
+            report_lines.append(f"- **Target**: `[{t['object']}]`\n  - **Mitigation Control**: `{t['subject']}`\n  - **Implementation Action**: Enforce security controls to mitigate technique execution.\n")
+    elif mitigations:
         for m in mitigations[:3]:
-            report_lines.append(f"- **[{m['name']}] [{m.get('attack_id','')}]** -> Enforce security policy controls as indicated by STIX metadata.")
+            report_lines.append(f"- **Target**: `[{m['name']}] [{m.get('attack_id','')}]`\n  - **Mitigation Control**: Security Policy Control\n  - **Implementation Action**: Implement hardening standards as indicated by STIX metadata.\n")
+    else:
+        for e in primary_items[:3]:
+            aid = f" [{e.get('attack_id','')}]" if e.get('attack_id') else ""
+            report_lines.append(f"- **Target**: `[{e['name']}]{aid}`\n  - **Mitigation Control**: Patch Management, Input Validation & Access Hardening\n  - **Implementation Action**: Remediate referenced vulnerability/weakness and restrict unauthorized execution paths.\n")
 
     report_lines.extend([
         "",
@@ -178,7 +342,7 @@ class RAGReasoningEngine:
                             {"role": "user", "content": user_prompt}
                         ],
                         temperature=0.2,
-                        max_tokens=1500
+                        max_tokens=4000
                     )
                     reasoning_output = response.choices[0].message.content
                     model_used = model_name
@@ -192,6 +356,9 @@ class RAGReasoningEngine:
                     "[OFFLINE / GRAPH EVIDENCE FALLBACK MODE]\n\n" + generate_structured_graph_fallback(evidence_bundle)
                 )
                 model_used = "graph-triplet-fallback"
+
+        # Apply normalization to guarantee 100% structured Markdown for every query
+        reasoning_output = normalize_cti_report(reasoning_output)
 
         result_prelim = {
             "query": query,

@@ -39,9 +39,7 @@
   font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #FFFFFF 0%, var(--accent-cyan) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
 }
 
 .brand-subtitle {
@@ -61,6 +59,28 @@
   font-size: 0.8rem;
   color: var(--accent-emerald);
   font-weight: 500;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.theme-toggle-btn:hover {
+  border-color: var(--border-highlight);
+  background: var(--bg-card-hover);
+  transform: translateY(-1px);
 }
 
 /* Search Bar Section */
@@ -94,8 +114,8 @@
 .search-input {
   width: 100%;
   padding: 1rem 1rem 1rem 3.25rem;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   color: var(--text-primary);
   font-size: 1rem;
@@ -106,7 +126,7 @@
 .search-input:focus {
   border-color: var(--accent-cyan);
   box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--bg-input-focus);
 }
 
 .btn-primary {
@@ -149,7 +169,7 @@
 }
 
 .chip-btn {
-  background: rgba(30, 41, 59, 0.6);
+  background: var(--bg-chip);
   border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 0.35rem 0.85rem;
@@ -161,7 +181,7 @@
 .chip-btn:hover {
   border-color: var(--accent-cyan);
   color: var(--accent-cyan);
-  background: rgba(56, 189, 248, 0.1);
+  background: rgba(56, 189, 248, 0.12);
 }
 
 /* Dashboard Main Layout */
@@ -199,9 +219,10 @@
   height: 480px;
   width: 100%;
   position: relative;
-  background: rgba(9, 13, 22, 0.9);
+  background: var(--bg-graph);
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
+  transition: background-color 0.25s ease;
 }
 
 .graph-canvas {
@@ -213,7 +234,7 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: rgba(15, 23, 42, 0.85);
+  background: var(--bg-overlay);
   backdrop-filter: blur(8px);
   padding: 0.75rem 1rem;
   border-radius: 8px;
@@ -223,6 +244,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
 }
 
 .legend-item {
@@ -248,32 +271,65 @@
 }
 
 .evidence-card {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-card-subtle);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 1rem 1.25rem;
   transition: all 0.2s ease;
 }
 
 .evidence-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(30, 41, 59, 0.6);
+  border-color: var(--border-highlight);
+  background: var(--bg-card-subtle-hover);
+}
+
+.evidence-card.is-expanded {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 4px 20px rgba(56, 189, 248, 0.15);
+  background: var(--bg-card-subtle-hover);
 }
 
 .card-top {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.4rem;
 }
 
 .entity-name {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.attack-id-chip {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  background: var(--bg-chip);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.dropdown-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-toggle-btn:hover {
+  color: var(--accent-cyan);
+  background: var(--bg-chip);
 }
 
 .prov-pill {
@@ -306,15 +362,143 @@
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--accent-emerald);
-  background: rgba(52, 211, 153, 0.1);
+  background: rgba(52, 211, 153, 0.12);
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
+  font-weight: 600;
 }
 
 .card-desc {
-  font-size: 0.82rem;
+  font-size: 0.83rem;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.5;
+}
+
+/* Evidence Dropdown Information */
+.evidence-dropdown {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dropdown-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dropdown-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.evidence-full-desc {
+  font-size: 0.86rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  background: var(--bg-card);
+  padding: 0.75rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.evidence-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.5rem;
+}
+
+.meta-box {
+  background: var(--bg-card);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.meta-box-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.meta-box-val {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+/* Sub-graph Triplets in Dropdown */
+.triplets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.triplet-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  padding: 0.45rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  font-size: 0.78rem;
+  flex-wrap: wrap;
+}
+
+.triplet-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.badge-out {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-cyan);
+}
+
+.badge-in {
+  background: rgba(129, 140, 248, 0.15);
+  color: var(--accent-indigo);
+}
+
+.triplet-entity {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.triplet-arrow {
+  color: var(--accent-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+/* Stage 6 Confidence Scoring Banner */
+.stage6-banner {
+  margin: 0 1.5rem;
+  padding: 1.25rem;
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 /* Reasoning Report Markdown */
@@ -322,29 +506,126 @@
   padding: 1.5rem;
   line-height: 1.7;
   font-size: 0.93rem;
-  color: #CBD5E1;
+  color: var(--text-secondary);
 }
 
 .report-content h3 {
   color: var(--accent-cyan);
-  margin-top: 1.2rem;
-  margin-bottom: 0.6rem;
-  font-size: 1.1rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.4rem;
-}
-
-.report-content ul, .report-content ol {
-  padding-left: 1.25rem;
+  margin-top: 1.4rem;
   margin-bottom: 0.8rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.report-content li {
+.report-content h4 {
+  color: var(--text-primary);
+  margin-top: 1rem;
   margin-bottom: 0.4rem;
+  font-size: 1rem;
+}
+
+/* Hierarchical Structured Cards for Attack Chain & Mitigations */
+.report-content > ul {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.report-content > ul > li {
+  background: var(--bg-card-subtle);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--accent-cyan);
+  border-radius: 8px;
+  padding: 0.9rem 1.25rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.report-content > ul > li:hover {
+  background: var(--bg-card-subtle-hover);
+  border-color: var(--border-highlight);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.report-content > ul > li > strong:first-child {
+  font-size: 0.98rem;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+/* Sub-bullets inside cards */
+.report-content ul ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.report-content ul ul li {
+  margin-bottom: 0.3rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 .report-content strong {
   color: var(--text-primary);
+}
+
+.report-content code {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--accent-cyan);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+/* GFM Markdown Table Support */
+.report-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.88rem;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card-subtle);
+}
+
+.report-content th {
+  background: var(--bg-chip);
+  color: var(--accent-cyan);
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.report-content td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+.report-content tr:nth-child(even) td {
+  background: var(--bg-card);
+}
+
+.report-content tr:hover td {
+  background: var(--bg-card-subtle-hover);
 }
 
 /* Empty & Loading States */
